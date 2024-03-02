@@ -3,7 +3,7 @@ from math import cos, tan, sin, pi
 
 outline_pen = ((0,0,0), 0.3)
 detail_pen = ((80,80,80), 0.2)
-roof_pen = ((11, 44, 154), 0.5)
+roof_pen = ((11, 44, 154), 0.3)
 
 def draw_window(mesh, bottom_center):
     window_heigth = 7

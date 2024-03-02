@@ -5,7 +5,7 @@ from .sides import get_front_mesh, get_side_mesh, get_back_mesh, get_roof_mesh
 from math import pi
 import pickle
 import os.path
-
+'''
 def get_building1(num_floor, num_room, depth):
     file_name = '/home/ty/axidrawArt/axi-renderer/objects/buildings/building1/models/'+str(num_floor)+','+str(num_room)+','+str(depth)+'.p'
     if(os.path.isfile(file_name)):
@@ -18,7 +18,9 @@ def get_building1(num_floor, num_room, depth):
             pickle.dump(building, file)
 
     return building
-
+'''
+def get_building1(num_floor, num_room, depth):
+    return Building1(num_floor, num_room, depth)
 class Building1(Object):
     def __init__(self, num_floor, num_room, depth):
         roof_angle = 0.17
