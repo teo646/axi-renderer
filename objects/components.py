@@ -26,8 +26,11 @@ class Polygon_mesh:
         self.is_drawn = False
 
 
-    def get_vertices(self):
-        return [self.points[index] for index in self.vertices_index]
+    def get_vertices_after_offset(self):
+        ratio = 0.05
+        center_x = sum([self.points[index].coordinate[0] for index in self.vertices_index])/len(self.vertices_index)
+        center_y = sum([self.points[index].coordinate[1] for index in self.vertices_index])/len(self.vertices_index)
+        return [self.points[index].coordinate*(1-ratio)+np.array([center_x, center_y,0,0])*ratio for index in self.vertices_index]
     
     def is_front_side(self):
         if(self.bi_direction):
@@ -44,20 +47,19 @@ class Polygon_mesh:
             else:
                 return False
 
-    def get_z_value_on_the_plane(self, x, y):
-        point= self.points[self.vertices_index[1]].coordinate[:3]
+    def get_z_value_on_the_plane(self,coordinate):
+        point_on_plane= self.points[self.vertices_index[0]].coordinate[:3]
         v1 = self.points[self.vertices_index[1]].coordinate[:3] - self.points[self.vertices_index[0]].coordinate[:3]
         v2 = self.points[self.vertices_index[2]].coordinate[:3] - self.points[self.vertices_index[0]].coordinate[:3]
         normal_vect = np.cross(v1, v2)
-        return (np.dot(normal_vect, point)-normal_vect[0]*x-normal_vect[1]*y)/normal_vect[2]
+        return (np.dot(normal_vect, point_on_plane)-normal_vect[0]*coordinate[0]-normal_vect[1]*coordinate[1])/normal_vect[2]
 
-    def is_including_point(self, point):
+    def is_including_point(self, coordinate):
         inside = False
-        point = point.coordinate
         for index in range(len(self.vertices_index)):
             point1 = self.points[self.vertices_index[index-1]].coordinate
             point2 = self.points[self.vertices_index[index]].coordinate
-            intersect = ((point1[1] > point[1]) != (point2[1] > point[1])) and (point[0] <= (point2[0] - point1[0]) * (point[1] - point1[1]) / (point2[1] - point1[1]) + point1[0])
+            intersect = ((point1[1] > coordinate[1]) != (point2[1] > coordinate[1])) and (coordinate[0] < (point2[0] - point1[0]) * (coordinate[1] - point1[1]) / (point2[1] - point1[1]) + point1[0])
             if(intersect):
                 inside = not inside
 

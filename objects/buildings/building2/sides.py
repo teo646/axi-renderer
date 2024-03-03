@@ -65,7 +65,7 @@ def draw_floors(mesh, bottom_left, num_room):
 def draw_first_floor(mesh, bottom_left, num_room):
     for room in range(num_room):
         room_center = move_point(bottom_left, room*9 + 4.5, 0)
-        if(room == 3):
+        if(room == 2):
             mesh = draw_door(mesh, room_center)
         else:
             mesh = draw_window(mesh, move_point(room_center, 0, 6))
@@ -88,13 +88,15 @@ def get_side_mesh(num_floor, depth, roof_angle):
     mesh = Polygon_mesh()
     mesh.points += [Point(0,0),
                     Point(depth, 0),
-                    Point(depth, num_floor*12+6+tan(roof_angle)*depth),
+                    Point(depth, num_floor*12+6),
+                    Point(depth/2, num_floor*12+6+tan(roof_angle)*depth/2),
                     Point(0, num_floor*12+6)]
     mesh.line_segments += [Line_segment(0,1, outline_pen),
                           Line_segment(1,2, outline_pen),
-                          Line_segment(2,3, outline_pen),
-                          Line_segment(3,0, outline_pen)]
-    mesh.vertices_index = [0,1,2,3]
+                          Line_segment(2,3, roof_pen),
+                          Line_segment(3,4, roof_pen),
+                          Line_segment(4,0, outline_pen)]
+    mesh.vertices_index = [0,1,2,3,4]
     mesh = draw_window(mesh, Point(depth/2-2, num_floor*8 + 4))
     mesh = draw_window(mesh, Point(depth/2+2, num_floor*8 + 4))
     return mesh
@@ -104,8 +106,8 @@ def get_back_mesh(num_floor, num_room, depth, roof_angle):
     mesh = Polygon_mesh()
     mesh.points += [Point(0,0),
                     Point(num_room*9, 0),
-                    Point(num_room*9, num_floor*12+6+tan(roof_angle)*depth),
-                    Point(0, num_floor*12+6+tan(roof_angle)*depth)]
+                    Point(num_room*9, num_floor*12+6),
+                    Point(0, num_floor*12+6)]
     mesh.line_segments += [Line_segment(0,1, outline_pen),
                           Line_segment(1,2, outline_pen),
                           Line_segment(2,3, outline_pen),
@@ -113,14 +115,22 @@ def get_back_mesh(num_floor, num_room, depth, roof_angle):
     mesh.vertices_index = [0,1,2,3]
     return mesh
 
-def get_roof_mesh(num_room, depth, roof_angle, eave_length):
+def get_front_roof_mesh(num_room, depth, roof_angle, eave_length):
     mesh = Polygon_mesh()
-    mesh = draw_square(mesh, Point(0,-eave_length), num_room*9, depth/cos(roof_angle)+eave_length, roof_pen)
+    mesh = draw_square(mesh, Point(0,-eave_length), num_room*9, depth/cos(roof_angle)/2+eave_length, roof_pen)
     mesh.vertices_index = [0,1,2,3]
 
     for i in range(1,  num_room*9):
-        mesh = draw_line(mesh, Point(i, -eave_length), 0, depth/cos(roof_angle)+eave_length, roof_pen)
+        mesh = draw_line(mesh, Point(i, -eave_length), 0, depth/cos(roof_angle)/2+eave_length, roof_pen)
 
     return mesh
 
+def get_rear_roof_mesh(num_room, depth, roof_angle):
+    mesh = Polygon_mesh()
+    mesh = draw_square(mesh, Point(0,0), num_room*9, depth/cos(roof_angle)/2, roof_pen)
+    mesh.vertices_index = [0,1,2,3]
 
+    for i in range(1,  num_room*9):
+        mesh = draw_line(mesh, Point(i, 0), 0, depth/cos(roof_angle)/2, roof_pen)
+
+    return mesh

@@ -1,19 +1,17 @@
 
 
-def get_overlaying_meshes(meshes, point):
+def get_overlaying_meshes(meshes, coordinate):
     overlaying_meshes = []
     for mesh in meshes:
-        if(mesh.is_including_point(point)):
+        if(mesh.is_including_point(coordinate)):
             overlaying_meshes.append(mesh)
     return overlaying_meshes
 
 
-def get_order_of_meshes_on_point(meshes, point):
-    overlaying_meshes = get_overlaying_meshes(meshes, point)
-    return sorted(overlaying_meshes, key = lambda mesh: mesh.get_z_value_on_the_plane(point.coordinate[0], point.coordinate[1]))
+def get_order_of_meshes_on_point(meshes, coordinate):
+    overlaying_meshes = get_overlaying_meshes(meshes, coordinate)
+    return sorted(overlaying_meshes, key = lambda mesh: mesh.get_z_value_on_the_plane(coordinate), reverse = True)
 
-def intergrate_lists(lists):
-    intergrated_list = []
 
 def merge_lists_and_maintain_order(lists):
     class Node_element:
@@ -26,7 +24,8 @@ def merge_lists_and_maintain_order(lists):
     elements = {}
     for list_ in lists:
         if(len(list_) == 1):
-            elements[list_[0]] = Node_element(list_[0])
+            if list_[0] not in elements:
+                elements[list_[0]] = Node_element(list_[0])
         for i in range(len(list_) - 1):
             value = list_[i]
             next_value = list_[i + 1]
@@ -65,15 +64,10 @@ def merge_lists_and_maintain_order(lists):
 def arrange_mesh(transformed_meshes):
     meshes = transformed_meshes
     mesh_ordered_lists = []
-
-    vertices = []
     for mesh in meshes:
-        vertices+=mesh.get_vertices()
-
-    for vertice in vertices:
-        mesh_ordered_list = get_order_of_meshes_on_point(meshes, vertice)
-        mesh_ordered_lists.append(mesh_ordered_list)
-
+        for vertice in mesh.get_vertices_after_offset():
+            mesh_ordered_list = get_order_of_meshes_on_point(meshes, vertice)
+            mesh_ordered_lists.append(mesh_ordered_list)
 
 
     return merge_lists_and_maintain_order(mesh_ordered_lists)

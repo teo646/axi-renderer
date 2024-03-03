@@ -1,4 +1,5 @@
 from .util import get_view_transformation_matrix, get_world_transformaion_matrix, convert_rgb
+import time
 import matplotlib.pyplot as plt
 from .mesh_arranger import arrange_mesh
 from maskCanvas import canvas, line_seg
@@ -60,6 +61,7 @@ class world:
 
 
     def draw_digital_image(self, EYE, AT):
+        start = time.time()
         self.view_transform(EYE, AT)
         self.back_face_culling()
         self.meshes = arrange_mesh(self.meshes)
@@ -71,7 +73,8 @@ class world:
                 c.registerLineSeg(line_seg([p1,p2], color=line_segment.color, thickness = line_segment.thickness))
             c.registerMask([mesh.points[index].coordinate[:2] for index in mesh.vertices_index])
 
-
+        end = time.time()
+        print("time it took:", end-start )
         cv2.namedWindow("Resized_Window", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Resized_Window", 700, 700)
         cv2.imshow("Resized_Window", c.draw(10)[::-1])
