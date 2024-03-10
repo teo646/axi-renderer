@@ -4,11 +4,10 @@ from math import cos, sin
 def get_normalized_vector(vector):
     return vector/np.sqrt(np.sum(vector ** 2))
 
-def convert_rgb(rgb):
-    return tuple(i/255 for i in rgb)[::-1]
+
 
 def get_world_transformaion_matrix(x_axis_rotation, y_axis_rotation, z_axis_rotation,
-            x_axis_translation, y_axis_translation, z_axis_translation):
+                                   x_axis_translation, y_axis_translation, z_axis_translation):
 
         Rz = np.array([[cos(z_axis_rotation), -sin(z_axis_rotation), 0, 0],
                        [sin(z_axis_rotation), cos(z_axis_rotation), 0, 0],

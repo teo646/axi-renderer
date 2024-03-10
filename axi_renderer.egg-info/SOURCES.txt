@@ -1,15 +1,8 @@
 LICENSE
 README.md
 setup.py
-axiRenderer/__init__.py
-axiRenderer/mesh_arranger.py
-axiRenderer/util.py
-axiRenderer/world.py
 axi_renderer.egg-info/PKG-INFO
 axi_renderer.egg-info/SOURCES.txt
 axi_renderer.egg-info/dependency_links.txt
 axi_renderer.egg-info/requires.txt
 axi_renderer.egg-info/top_level.txt
-objects/__init__.py
-objects/components.py
-objects/util.py

@@ -13,7 +13,7 @@ def get_order_of_meshes_on_point(meshes, coordinate):
     return sorted(overlaying_meshes, key = lambda mesh: mesh.get_z_value_on_the_plane(coordinate), reverse = True)
 
 
-def merge_lists_and_maintain_order(lists):
+def merge_lists_while_maintaining_order(lists):
     class Node_element:
         def __init__(self, value):
             self.value = value
@@ -61,7 +61,7 @@ def merge_lists_and_maintain_order(lists):
 
 
 #input 2d transformed meshes to get order for drawing
-def arrange_mesh(transformed_meshes):
+def arrange_meshes(transformed_meshes):
     meshes = transformed_meshes
     mesh_ordered_lists = []
     for mesh in meshes:
@@ -70,4 +70,4 @@ def arrange_mesh(transformed_meshes):
             mesh_ordered_lists.append(mesh_ordered_list)
 
 
-    return merge_lists_and_maintain_order(mesh_ordered_lists)
+    return merge_lists_while_maintaining_order(mesh_ordered_lists)

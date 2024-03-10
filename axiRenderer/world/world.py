@@ -1,8 +1,9 @@
-from .util import get_view_transformation_matrix, get_world_transformaion_matrix, convert_rgb
+from axiRenderer.utils import get_view_transformation_matrix, get_world_transformaion_matrix, cv2_color_to_plt_color
+from axiRenderer.utils.display import display_3d
+from axiRenderer.drawing_canvas import canvas
 import time
 import matplotlib.pyplot as plt
-from .mesh_arranger import arrange_mesh
-from maskCanvas import canvas, line_seg
+from .mesh_arranger import arrange_meshes
 import cv2
 
 class world:
@@ -53,7 +54,7 @@ class world:
                 ax.plot([p1.coordinate[0], p2.coordinate[0]],
                         [p1.coordinate[1], p2.coordinate[1]],
                         zs=[p1.coordinate[2], p2.coordinate[2]],
-                        color=convert_rgb(line_segment.color),
+                        color=cv2_color_to_plt_color(line_segment.color),
                         linewidth = line_segment.thickness)
         ax.view_init(90, -90)
         plt.show()
@@ -61,25 +62,19 @@ class world:
 
 
     def draw_digital_image(self, EYE, AT):
-        start = time.time()
         self.view_transform(EYE, AT)
         self.back_face_culling()
-        self.meshes = arrange_mesh(self.meshes)
+        self.meshes = arrange_meshes(self.meshes)
         c = canvas()
         for mesh in self.meshes:
             for line_segment in mesh.line_segments:
-                p1 = mesh.points[line_segment.point1_index].coordinate[:2]
-                p2 = mesh.points[line_segment.point2_index].coordinate[:2]
-                c.registerLineSeg(line_seg([p1,p2], color=line_segment.color, thickness = line_segment.thickness))
-            c.registerMask([mesh.points[index].coordinate[:2] for index in mesh.vertices_index])
+                p1 = mesh.points[line_segment.point1_index]
+                p2 = mesh.points[line_segment.point2_index]
+                c.register_line_segment(p1, p2, line_segment.pen)
+            c.register_mask([mesh.points[index] for index in mesh.vertices_index])
 
-        end = time.time()
-        print("time it took:", end-start )
-        cv2.namedWindow("Resized_Window", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Resized_Window", 700, 700)
-        cv2.imshow("Resized_Window", c.draw(10)[::-1])
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        c.show(10)
+
 
                 
 

@@ -6,7 +6,7 @@ setup(
     description='module for converting 3d object to 2d lines',
     author='Tae Young Choi',
     author_email='tyul0529@naver.com',
-    packages=['axiRenderer', 'objects'],
+    packages=['axiRenderer'],
     install_requires=['numpy', 'opencv-python'],
     license='MIT',
     classifiers=(
