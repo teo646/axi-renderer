@@ -125,40 +125,40 @@ class Mask:
 
 #mask that let you only draw inside of the maclass reverse_mask(mask):
 class ReversedMask(Mask):
-    def __init__(self):
+    def __init__(self, path):
         super().__init__(path)
 
-    def mask_line_segment(self, point1, point2):
-        point1, point2 = self._arrange_points(point1, point2)
-        intersections, point1_index, point2_index = self._get_intersections_and_index(point1, point2)
+    def _get_masked_lines(self, use_x_intercept, intersections, point1, point2):
+
+        if(use_x_intercept):
+            intersections = sorted(intersections, key= lambda point: point.coordinate[1])
+            point1_index = bisect_left(KeyWrapper(intersections, key=lambda c: c.coordinate[1]), point1.coordinate[1])
+            point2_index = bisect_left(KeyWrapper(intersections, key=lambda c: c.coordinate[1]), point2.coordinate[1])
+        else:
+            intersections = sorted(intersections, key= lambda point:point.coordinate[0])
+            point1_index = bisect_left(KeyWrapper(intersections, key=lambda c: c.coordinate[0]), point1.coordinate[0])
+            point2_index = bisect_left(KeyWrapper(intersections, key=lambda c: c.coordinate[0]), point2.coordinate[0])
 
         #if there is no intersections
         if(point1_index == point2_index):
-            #no masking
+            #no masking 
             if(point1_index%2 == 0):
                 return []
             else:
                 return [[point1, point2]]
 
-        intersections, point1_index, point2_index = self.getIntersectionsAndIndex(line)
-
-        #if there is no intersections
-        if(point1_index == point2_index):
-            #no masking
-            if(point1_index%2 == 0):
-                return []
-            else:
-                return [line]
-
         #if there is any intersection
         masked_lines = []
         if(point1_index%2 == 1):
-            masked_lines.append([line.points[0], intersections[point1_index]])
+            masked_lines.append([point1, intersections[point1_index]])
             point1_index += 1
         if(point2_index%2 == 1):
-            masked_lines.append([intersections[point2_index-1], line.points[1]])
+            masked_lines.append([intersections[point2_index-1], point2])
             point2_index -= 1
         for index in range(point1_index, point2_index, 2):
             masked_lines.append([intersections[index], intersections[index+1]])
 
         return masked_lines
+
+    def is_in_the_region(self, region):
+        return True

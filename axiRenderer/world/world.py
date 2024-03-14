@@ -20,8 +20,23 @@ class world:
                                                                y_axis_translation,
                                                                z_axis_translation)
         for mesh in object_.meshes:
-            self.meshes.append(mesh.transform(transformation_matrix))
-        
+            self.meshes.append(mesh.world_transform(transformation_matrix))
+
+    def back_face_culling(self):
+        processed_meshes = []
+        for mesh in self.meshes:
+            if(mesh.is_front_side()):
+                processed_meshes.append(mesh)
+
+        self.meshes = processed_meshes
+
+
+
+    def view_transform(self, EYE, AT):
+        transformation_matrix = get_view_transformation_matrix(EYE, AT)
+        for mesh in self.meshes:
+            mesh.view_transform(transformation_matrix)
+     
 
     def display(self, EYE, AT):
         self.view_transform(EYE, AT)
@@ -46,11 +61,12 @@ class world:
 
 
     def draw_digital_image(self, EYE, AT):
+        self.view_transform(EYE, AT)
+        self.back_face_culling()
         self.meshes = arrange_meshes(self.meshes)
-        view_transformation_matrix = get_view_transformation_matrix(EYE, AT)
         c = canvas()
         for mesh in self.meshes:
-            c = mesh.draw_digital_image(c, view_transformation_matrix)
+            c = mesh.draw_digital_image(c)
         c.show(10)
 
 

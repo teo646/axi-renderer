@@ -16,7 +16,7 @@ class canvas():
 
         if(is_valid_line(point1, point2)):
             line_segments_to_mask  = [[point1, point2]] 
-            for mask in self.masks:
+            for mask in self._get_mask_in_region(point1, point2):
                 masked_lines = []
                 for line in line_segments_to_mask:
                     if(is_valid_line(line[0], line[1])):

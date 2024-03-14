@@ -18,7 +18,7 @@ def main():
     w.put_object(get_building1(5, 3, 35), 0, 0, 0, 174, 150, 0)
     w.put_object(get_building2(6, 6, 35), 0, 0, 0, 229.5, 150, 0)
     w.put_object(get_building2_corner(6, 6, 8, 35), 0.2, 0, 0, 300, 300, 0)
-    w.put_object(River([Point(0,0,0), Point(50,0,0),Point(50,30,0),Point(0,30,0)], w), 0,0,0,40,100,0)
+    w.put_object(River([Point(0,0,0), Point(250,0,0),Point(250,75,0),Point(0,75,0)], w), 0,0,0,0,50,0)
     w.draw_digital_image(Point(100,100, 100), Point(120,150,30))
 
 if __name__ =="__main__":
