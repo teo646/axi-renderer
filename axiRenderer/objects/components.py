@@ -77,6 +77,16 @@ class Mesh:
         self.bi_direction = True
         return self
 
+    def draw_digital_image(self, canvas, transformation_matrix):
+        self.transform(transformation_matrix)
+        if(self.is_front_side()):
+            for line_segment in self.line_segments:
+                p1 = self.points[line_segment.point1_index]
+                p2 = self.points[line_segment.point2_index]
+                canvas.register_line_segment(p1, p2, line_segment.pen)
+            canvas.register_mask([self.points[index] for index in self.vertices_index])
+        return canvas
+
 class Object:
     def __init__(self, meshes):
         self.meshes = meshes

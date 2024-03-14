@@ -22,25 +22,9 @@ class world:
         for mesh in object_.meshes:
             self.meshes.append(mesh.transform(transformation_matrix))
         
-    def back_face_culling(self):
-        processed_meshes = []
-        for mesh in self.meshes:
-            if(mesh.is_front_side()):
-                processed_meshes.append(mesh)
-
-        self.meshes = processed_meshes
-
-
-
-    def view_transform(self, EYE, AT):
-        transformation_matrix = get_view_transformation_matrix(EYE, AT)
-        for mesh in self.meshes:
-            mesh.transform(transformation_matrix)
-
 
     def display(self, EYE, AT):
         self.view_transform(EYE, AT)
-        self.back_face_culling()
 
         fig = plt.figure(figsize=(9, 6))
         ax = fig.add_subplot(111, projection='3d', aspect='equal')
@@ -62,17 +46,11 @@ class world:
 
 
     def draw_digital_image(self, EYE, AT):
-        self.view_transform(EYE, AT)
-        self.back_face_culling()
         self.meshes = arrange_meshes(self.meshes)
+        view_transformation_matrix = get_view_transformation_matrix(EYE, AT)
         c = canvas()
         for mesh in self.meshes:
-            for line_segment in mesh.line_segments:
-                p1 = mesh.points[line_segment.point1_index]
-                p2 = mesh.points[line_segment.point2_index]
-                c.register_line_segment(p1, p2, line_segment.pen)
-            c.register_mask([mesh.points[index] for index in mesh.vertices_index])
-
+            c = mesh.draw_digital_image(c, view_transformation_matrix)
         c.show(10)
 
 
