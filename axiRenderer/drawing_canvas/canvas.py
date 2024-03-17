@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 from .mask import Mask
 from .util import show_image, is_valid_line, is_valid_mask, cv2_draw_line
-
 from axiRenderer.objects.components import Point, Mesh
 from math import floor, ceil
 
@@ -74,3 +73,4 @@ class canvas():
             image = cv2_draw_line(image, line, magnification, -x_min, -y_min)
 
         show_image(image[::-1])
+        cv2.imwrite("./output/test.jpg", image[::-1])

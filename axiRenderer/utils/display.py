@@ -3,7 +3,7 @@ from .color import cv2_color_to_plt_color
 
 def display_3d(mesh_or_object_or_world):
     fig = plt.figure(figsize=(9, 6))
-    ax = fig.add_subplot(111, projection='3d', aspect='equal')
+    ax = fig.add_subplot(111, projection='3d')
     plt.xlabel('x')
     plt.ylabel('y')
 

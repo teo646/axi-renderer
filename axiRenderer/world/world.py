@@ -19,8 +19,10 @@ class world:
                                                                x_axis_translation,
                                                                y_axis_translation,
                                                                z_axis_translation)
-        for mesh in object_.meshes:
-            self.meshes.append(mesh.world_transform(transformation_matrix))
+
+        for mesh in object_.world_transform(transformation_matrix).meshes:
+            self.meshes.append(mesh)
+
 
     def back_face_culling(self):
         processed_meshes = []
@@ -53,20 +55,23 @@ class world:
                 ax.plot([p1.coordinate[0], p2.coordinate[0]],
                         [p1.coordinate[1], p2.coordinate[1]],
                         zs=[p1.coordinate[2], p2.coordinate[2]],
-                        color=cv2_color_to_plt_color(line_segment.color),
-                        linewidth = line_segment.thickness)
+                        color=cv2_color_to_plt_color(line_segment.pen[0]),
+                        linewidth = line_segment.pen[1])
         ax.view_init(90, -90)
         plt.show()
 
 
 
     def draw_digital_image(self, EYE, AT):
+        start = time.time()
         self.view_transform(EYE, AT)
         self.back_face_culling()
         self.meshes = arrange_meshes(self.meshes)
         c = canvas()
         for mesh in self.meshes:
             c = mesh.draw_digital_image(c)
+        end = time.time()
+        print("time spent: "+str(end - start))
         c.show(10)
 
 

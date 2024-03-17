@@ -93,9 +93,10 @@ class Object:
     def __init__(self, meshes):
         self.meshes = meshes
 
-    def transform(self, matrix):
+    def world_transform(self, matrix):
         for mesh in self.meshes:
-            mesh.transform(matrix)
+            mesh.world_transform(matrix)
+
 
         return self
 

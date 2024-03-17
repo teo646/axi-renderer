@@ -129,6 +129,14 @@ class ReversedMask(Mask):
         super().__init__(path)
 
     def _get_masked_lines(self, use_x_intercept, intersections, point1, point2):
+        '''
+        region = [point1.coordinate[0] if point1.coordinate[0] < point2.coordinate[0] else point2.coordinate[0],
+                  point1.coordinate[0] if point1.coordinate[0] > point2.coordinate[0] else point2.coordinate[0],
+                  point1.coordinate[1] if point1.coordinate[1] < point2.coordinate[1] else point2.coordinate[1],
+                  point1.coordinate[1] if point1.coordinate[1] > point2.coordinate[1] else point2.coordinate[1]]
+        if(not super().is_in_the_region(region)):
+            return [[point1, point2]]
+        ''' 
 
         if(use_x_intercept):
             intersections = sorted(intersections, key= lambda point: point.coordinate[1])
