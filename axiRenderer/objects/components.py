@@ -3,7 +3,9 @@ from math import cos, sin
 class Point:
     def __init__(self,x,y,z=0):
         self.coordinate = np.array([x,y,z,1])
-
+    
+    def cv2_version(self):
+        return self.coordinate[:2].astype("uint32")
 
 class LineSegment:
     def __init__(self, point1_index, point2_index, pen):

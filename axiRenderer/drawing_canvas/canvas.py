@@ -62,12 +62,12 @@ class canvas():
                     y_min = line[i].coordinate[1]
 
         return floor(x_min), ceil(x_max), floor(y_min), ceil(y_max)
-
-
     def show(self, magnification):
 
         x_min, x_max, y_min, y_max = self._get_range_of_points()
         image = np.full(((y_max-y_min)*magnification,(x_max-x_min)*magnification,3), 255, dtype='uint8')
+        print("drawing heigth : ", str(y_max-y_min), "mm")
+        print("drawing width : ", str(x_max-x_min), "mm")
 
         for line in self.lines:
             image = cv2_draw_line(image, line, magnification, -x_min, -y_min)

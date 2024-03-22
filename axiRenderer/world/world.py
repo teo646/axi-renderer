@@ -5,6 +5,7 @@ import time
 import matplotlib.pyplot as plt
 from .mesh_arranger import arrange_meshes
 import cv2
+import numpy as np
 
 class world:
     def __init__(self):
@@ -12,14 +13,16 @@ class world:
 
 
     def put_object(self, object_, x_axis_rotation, y_axis_rotation, z_axis_rotation, 
-                    x_axis_translation, y_axis_translation, z_axis_translation): 
+                    x_axis_translation, y_axis_translation, z_axis_translation, scale): 
         transformation_matrix = get_world_transformaion_matrix(x_axis_rotation,
                                                                y_axis_rotation,
                                                                z_axis_rotation,
                                                                x_axis_translation,
                                                                y_axis_translation,
                                                                z_axis_translation)
-
+        scale_matrix = np.identity(4)
+        scale_matrix[:3] *= scale
+        transformation_matrix = np.matmul(transformation_matrix, scale_matrix)
         for mesh in object_.world_transform(transformation_matrix).meshes:
             self.meshes.append(mesh)
 
@@ -61,18 +64,18 @@ class world:
         plt.show()
 
 
-
     def draw_digital_image(self, EYE, AT):
-        start = time.time()
+        #start = time.time()
         self.view_transform(EYE, AT)
         self.back_face_culling()
         self.meshes = arrange_meshes(self.meshes)
         c = canvas()
         for mesh in self.meshes:
             c = mesh.draw_digital_image(c)
-        end = time.time()
-        print("time spent: "+str(end - start))
-        c.show(10)
+        #end = time.time()
+        #print("time spent: "+str(end - start))
+        c.show(20)
+        return c
 
 
                 

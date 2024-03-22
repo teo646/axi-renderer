@@ -2,9 +2,9 @@ from math import cos, sin, pi
 import numpy as np
 from .components import Point, LineSegment
 
-outline_pen = ((80,80,80), 0.2)
-detail_pen = ((80,80,80), 0.2)
-roof_pen = ((11, 44, 154), 0.3)
+outline_pen = ((80,80,80), 0.1)
+detail_pen = ((80,80,80), 0.1)
+roof_pen = ((11, 44, 154), 0.15)
 
 
 def move_point(point_, Dx, Dy):

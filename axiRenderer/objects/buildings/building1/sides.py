@@ -4,7 +4,6 @@ from axiRenderer.objects.draw import move_point, draw_square, draw_line, draw_ar
 from axiRenderer.objects.buildings import draw_simple_window, draw_arc_frame,\
                                           draw_simple_door 
 from math import cos, tan
-
 def draw_floors(mesh, bottom_left, num_room):
     mesh = draw_line(mesh, bottom_left, num_room*9, 0, detail_pen)
     for room in range(num_room):

@@ -44,9 +44,9 @@ class RiverSurface(Mesh):
         return self
 
     def get_point_on_water_surface(self, point):
-        point.coordinate[2] += cos(0.2*point.coordinate[0])*sin(0.2*point.coordinate[1])
-        point.coordinate[0] -= cos(0.2*point.coordinate[0])*sin(0.2*point.coordinate[1])
-        point.coordinate[1] += cos(0.2*point.coordinate[0])*sin(0.2*point.coordinate[1])
+        point.coordinate[2] += 0.5*cos(0.4*point.coordinate[0])*sin(0.4*point.coordinate[1])
+        point.coordinate[0] -= 0.5*cos(0.4*point.coordinate[0])*sin(0.4*point.coordinate[1])
+        point.coordinate[1] += 0.5*cos(0.4*point.coordinate[0])*sin(0.4*point.coordinate[1])
         return point
 
     def split_points(self, point1, point2):
@@ -56,24 +56,13 @@ class RiverSurface(Mesh):
             for i in range(len(points)-1, 0, -1):
                     points.insert(i, get_middle_point(points[i],points[i-1]))
         return points
-
-
-    def draw_reflections(self, matrix):
-        inverse_matrix = np.linalg.inv(matrix) 
-        #self.line_segments = []
-        c = canvas()
-        c.register_mask(ReversedMask([self.points[i] for i in self.vertices_index]))
-        self.world.back_face_culling()
-        self.world.meshes = arrange_meshes(self.world.meshes)
-        for mesh in self.world.meshes:
-            c = mesh.draw_digital_image(c)
-        # we need to put all of the lines back to lines
-
-        for line in c.lines:
+    
+    def draw_lines_on_water(self, lines, inverse_matrix, matrix):
+        for line in lines:
             line[0].coordinate[2] = self.get_z_value_on_the_plane(line[0].coordinate)
             line[1].coordinate[2] = self.get_z_value_on_the_plane(line[1].coordinate)
 
-        for line in c.lines:
+        for line in lines:
             line[0].coordinate = np.matmul(inverse_matrix,line[0].coordinate)
             line[1].coordinate = np.matmul(inverse_matrix,line[1].coordinate)
             points = self.split_points(line[0], line[1])
@@ -82,4 +71,20 @@ class RiverSurface(Mesh):
                 p.coordinate = np.matmul(matrix,p.coordinate)
             for i in range(len(points)-1):
                 connect_points(self, points[i], points[i+1], line[2])
-            
+
+    def draw_reflections(self, matrix):
+        inverse_matrix = np.linalg.inv(matrix) 
+        #self.line_segments = []
+        self.world.back_face_culling()
+        self.world.meshes = arrange_meshes(self.world.meshes)
+
+        c = canvas()
+        c.register_mask(ReversedMask([self.points[i] for i in self.vertices_index]))
+        for mesh in self.world.meshes:
+            c = mesh.draw_digital_image(c)
+
+       
+        # we need to put all of the lines back to lines
+
+        self.draw_lines_on_water(c.lines, inverse_matrix, matrix)
+        
