@@ -28,13 +28,13 @@ class Building1(Object):
         front = get_front_mesh(num_floor, num_room).transform(get_world_transformaion_matrix(pi/2,0,0,-num_room*9/2, -depth/2, 0))
         meshes.append(front)
         right_side = get_side_mesh(num_floor, depth, roof_angle).transform(get_world_transformaion_matrix(pi/2,0,pi/2,num_room*9/2, -depth/2, 0))
-        meshes.append(right_side.reverse_dir())
+        meshes.append(right_side.reverse_direction())
         left_side = get_side_mesh(num_floor, depth, roof_angle).transform(get_world_transformaion_matrix(pi/2,0,pi/2,-num_room*9/2, -depth/2, 0))
         meshes.append(left_side)
         back = get_back_mesh(num_floor, num_room, depth, roof_angle).transform(get_world_transformaion_matrix(pi/2,0,0,-num_room*9/2, depth/2, 0))
         meshes.append(back)
         roof = get_roof_mesh(num_room, depth, roof_angle, eave_length).transform(get_world_transformaion_matrix(roof_angle,0,0,-num_room*9/2, -depth/2, num_floor*12+6))
-        meshes.append(roof.remove_dir())
+        meshes.append(roof.remove_direction())
         super().__init__(meshes)
 
 def main():

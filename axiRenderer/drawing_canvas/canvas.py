@@ -1,30 +1,46 @@
 import numpy as np
 import cv2
-from .mask import Mask
-from .util import show_image, is_valid_line, is_valid_mask, cv2_draw_line
-from axiRenderer.objects.components import Point, Mesh
+from .mask import Mask, ReversedMask
+from .util import show_image, is_valid_line, is_valid_mask, cv2_draw_line, \
+                  identical_points
+from axiRenderer.objects.components import Point, Mesh, Path
 from math import floor, ceil
+from copy import deepcopy
 
 class canvas():
     def __init__(self):
-        self.lines = []
+        self.paths = []
         self.masks = []
 
+    def draw_path(self, path):
+        current_point = path.points[0]
+        current_path = [current_point]
+        for p1, p2 in zip(path.points, path.points[1:]):
+            for line in self.mask_segment(p1,p2):
+                if(identical_points(current_point, line[0])):
+                    current_point = line[1]
+                    current_path.append(current_point)
+                else:
+                    if(not len(current_path) == 1):
+                        self.paths.append(Path(current_path, path.pen))
+                    current_path = [line[0], line[1]]
+                    current_point = line[1]
+        if(not len(current_path) == 1):
+            self.paths.append(Path(current_path, path.pen))
 
-    def register_line_segment(self, point1, point2, pen):
 
+    def mask_segment(self, point1, point2):
         if(is_valid_line(point1, point2)):
-            line_segments_to_mask  = [[point1, point2]] 
+            segments_to_mask  = [[point1, point2]] 
             for mask in self._get_mask_in_region(point1, point2):
                 masked_lines = []
-                for line in line_segments_to_mask:
+                for line in segments_to_mask:
                     if(is_valid_line(line[0], line[1])):
                         masked_lines += mask.mask_line_segment(line[0], line[1])
-                line_segments_to_mask = masked_lines
+                segments_to_mask = masked_lines
             
-            for line in line_segments_to_mask:
-                self.lines.append((line[0], line[1], pen))
-        
+            return segments_to_mask
+        return []
     
     def _get_mask_in_region(self, point1, point2):
         region = [point1.coordinate[0] if point1.coordinate[0] < point2.coordinate[0] else point2.coordinate[0],
@@ -47,30 +63,38 @@ class canvas():
         if(is_valid_mask(mask_)):
             self.masks.append(mask_)
 
-    def _get_range_of_points(self):
-        x_min = x_max = self.lines[0][0].coordinate[0]
-        y_min = y_max = self.lines[0][0].coordinate[1]
-        for line in self.lines:
-            for i in range(2):
-                if(line[i].coordinate[0] > x_max):
-                    x_max = line[i].coordinate[0]
-                if(line[i].coordinate[0] < x_min):
-                    x_min = line[i].coordinate[0]
-                if(line[i].coordinate[1] > y_max):
-                    y_max = line[i].coordinate[1]
-                if(line[i].coordinate[1] < y_min):
-                    y_min = line[i].coordinate[1]
+    def get_range_of_points(self):
+        x_min = x_max = self.paths[0].points[0].coordinate[0]
+        y_min = y_max = self.paths[0].points[0].coordinate[1]
+        for path in self.paths:
+            for point in path.points:
+                if(point.coordinate[0] > x_max):
+                    x_max = point.coordinate[0]
+                if(point.coordinate[0] < x_min):
+                    x_min = point.coordinate[0]
+                if(point.coordinate[1] > y_max):
+                    y_max = point.coordinate[1]
+                if(point.coordinate[1] < y_min):
+                    y_min = point.coordinate[1]
 
         return floor(x_min), ceil(x_max), floor(y_min), ceil(y_max)
-    def show(self, magnification):
+    
 
-        x_min, x_max, y_min, y_max = self._get_range_of_points()
-        image = np.full(((y_max-y_min)*magnification,(x_max-x_min)*magnification,3), 255, dtype='uint8')
-        print("drawing heigth : ", str(y_max-y_min), "mm")
-        print("drawing width : ", str(x_max-x_min), "mm")
+    def get_fitting_paths(self):
+        x_min, x_max, y_min, y_max = self.get_range_of_points()
 
-        for line in self.lines:
-            image = cv2_draw_line(image, line, magnification, -x_min, -y_min)
+        #offset paths
+        fitting_paths = []
+        for path in self.paths:
+            fitting_path = []
+            for point in path.points:
+                fitting_point = deepcopy(point)
+                fitting_point.coordinate[0] -= x_min
+                fitting_point.coordinate[1] -= y_min
+                fitting_path.append(fitting_point)
+            fitting_paths.append(Path(fitting_path, path.pen))
 
-        show_image(image[::-1])
-        cv2.imwrite("./output/test.jpg", image[::-1])
+        return fitting_paths
+
+
+

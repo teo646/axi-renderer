@@ -8,20 +8,21 @@ def display_3d(mesh_or_object_or_world):
     plt.ylabel('y')
 
     #if it is mesh object
-    if(not hasattr(mesh_or_object_or_world, 'meshes')):
-        target = [mesh_or_object_or_world]
+    if(hasattr(mesh_or_object_or_world, 'meshes')):
+        target = mesh_or_object_or_world.meshes
+    elif(hasattr(mesh_or_object_or_world, 'objects')):
+        target = [mesh for object_ in mesh_or_object_or_world.objects for mesh in object_.meshes]
     else:
         target = mesh_or_object_or_world.meshes
 
     for mesh in target:
-        for line_segment in mesh.line_segments:
-            p1 = mesh.points[line_segment.point1_index]
-            p2 = mesh.points[line_segment.point2_index]
-            ax.plot([p1.coordinate[0], p2.coordinate[0]],
-                    [p1.coordinate[1], p2.coordinate[1]],
-                    zs=[p1.coordinate[2], p2.coordinate[2]],
-                    color=cv2_color_to_plt_color(line_segment.pen[0]),
-                    linewidth = line_segment.pen[1])
+        for path in mesh.paths:
+            for p1, p2 in zip(path.points, path.points[1:]):
+                ax.plot([p1.coordinate[0], p2.coordinate[0]],
+                        [p1.coordinate[1], p2.coordinate[1]],
+                        zs=[p1.coordinate[2], p2.coordinate[2]],
+                        color=cv2_color_to_plt_color(path.pen[0]),
+                        linewidth = path.pen[1])
     plt.show()
 
 

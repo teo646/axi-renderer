@@ -18,26 +18,25 @@ class River(Object):
         river_surface_depth = 7
 
         wall_inner_mesh = get_wall_inner_mesh(length, wall_heigth+river_surface_depth)
-        meshes.append(wall_inner_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, -width/2, -river_surface_depth)))
+        meshes.append(wall_inner_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, -width/2, -river_surface_depth)).reverse_direction())
         wall_outer_mesh = get_wall_outer_mesh(length, wall_heigth)
-        meshes.append(wall_outer_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, -width/2 - wall_width, 0)).reverse_dir())
+        meshes.append(wall_outer_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, -width/2 - wall_width, 0)))
         wall_top_mesh = get_wall_top_mesh(length, wall_width)
-        meshes.append(wall_top_mesh.transform(get_world_transformaion_matrix(0,0,0,-length/2, -width/2 - wall_width, wall_heigth)).reverse_dir())
+        meshes.append(wall_top_mesh.transform(get_world_transformaion_matrix(0,0,0,-length/2, -width/2 - wall_width, wall_heigth)))
 
         wall_inner_mesh = get_wall_inner_mesh(length, wall_heigth+river_surface_depth)
-        meshes.append(wall_inner_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, width/2, -river_surface_depth)).reverse_dir())
+        meshes.append(wall_inner_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, width/2, -river_surface_depth)))
         wall_outer_mesh = get_wall_outer_mesh(length, wall_heigth)
-        meshes.append(wall_outer_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, width/2 + wall_width, 0)))
+        meshes.append(wall_outer_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, width/2 + wall_width, 0)).reverse_direction())
         wall_top_mesh = get_wall_top_mesh(length, wall_width)
-        meshes.append(wall_top_mesh.transform(get_world_transformaion_matrix(0,0,0, -length/2, width/2, wall_heigth)).reverse_dir())
+        meshes.append(wall_top_mesh.transform(get_world_transformaion_matrix(0,0,0, -length/2, width/2, wall_heigth)))
         river_surface = RiverSurface(path, world)
-        meshes.append(river_surface.transform(get_world_transformaion_matrix(0,0,0, -length/2, -width/2, -river_surface_depth)).reverse_dir())
-
+        meshes.append(river_surface.transform(get_world_transformaion_matrix(0,0,0, -length/2, -width/2, -river_surface_depth)).reverse_direction())
+        self.things_to_add_on_reflections = Object(meshes[:-1])
         super().__init__(meshes)
 
     def world_transform(self, matrix):
         super().world_transform(matrix)
-        for mesh in self.meshes[:-1]:
-            self.meshes[-1].world.meshes.append(copy.deepcopy(mesh))
+        self.meshes[-1].world.objects.append(copy.deepcopy(self.things_to_add_on_reflections))
 
         return self

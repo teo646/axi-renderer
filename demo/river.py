@@ -1,5 +1,6 @@
 from axiRenderer.objects import get_building1, get_building2, get_building1_corner, get_building2_corner
 from axiRenderer.world import world
+from axiRenderer.axidraw_controller.axidraw_controller import AxidrawController
 from math import pi
 from axiRenderer.objects import Point
 from axiRenderer.objects.river.river import River
@@ -25,7 +26,13 @@ def main():
     w.put_object(get_building2(4, 3, 35), 0, 0, 0, 167, 75, 0, 0.5)
     w.put_object(get_building2(6, 11, 35), 0, 0, 0, 201, 75, 0, 0.5)
     w.put_object(River(200, 800, w), 0,0,0,100, -2.5,0, 0.5)
-    lines = w.draw_digital_image(Point(100,100, 70), Point(120,150,30))
+    canvas = w.draw_digital_image(Point(100,100, 70), Point(120,150,30))
+    ac = AxidrawController(canvas)
+    print("press 'y' if you want to draw the image")
+    ac.preview(20)
+    if(str(input()) == 'y'):
+        ac.draw(True, True)
+
 
 if __name__ =="__main__":
     main()

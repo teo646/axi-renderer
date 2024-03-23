@@ -33,16 +33,16 @@ class Building1_corner(Object):
         x_left_side = get_side_mesh(num_floor, depth, roof_angle).transform(get_world_transformaion_matrix(pi/2,0,pi/2,-num_room_x*9/2, -depth/2, 0))
         meshes.append(x_left_side)
         y_right_side = get_side_mesh(num_floor, depth, roof_angle).transform(get_world_transformaion_matrix(pi/2,0,pi,num_room_x*9/2, num_room_y*9-depth/2, 0))
-        meshes.append(y_right_side.reverse_dir())
+        meshes.append(y_right_side.reverse_direction())
 
         x_back = get_corner_back_mesh(num_floor, num_room_x, depth, roof_angle).transform(get_world_transformaion_matrix(pi/2,0,0,-num_room_x*9/2, depth/2, 0))
         meshes.append(x_back)
         y_back = get_corner_back_mesh(num_floor, num_room_y, depth, roof_angle).transform(get_world_transformaion_matrix(pi/2,0,pi/2,num_room_x*9/2-depth, depth/2, 0))
         meshes.append(y_back)
         x_roof = get_corner_roof_mesh(num_room_x, depth, roof_angle, eave_length).transform(get_world_transformaion_matrix(roof_angle,0,0,-num_room_x*9/2, -depth/2, num_floor*12+6))
-        meshes.append(x_roof.remove_dir())
+        meshes.append(x_roof.remove_direction())
         y_roof = get_corner_roof_mesh(num_room_y, depth, roof_angle, eave_length).transform(get_world_transformaion_matrix(pi-roof_angle,0,-pi/2,num_room_x*9/2, num_room_y*9-depth/2, num_floor*12+6))
-        meshes.append(y_roof.remove_dir())
+        meshes.append(y_roof.remove_direction())
         super().__init__(meshes)
 
 def main():

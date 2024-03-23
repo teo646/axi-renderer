@@ -72,3 +72,11 @@ def convert_point(point, magnification, dx, dy):
 def cv2_draw_line(image, line, magnification, dx, dy):
     return cv2.line(image, convert_point(line[0], magnification, dx, dy), convert_point(line[1], magnification, dx, dy), line[2][0], int(line[2][1]*magnification))
 
+
+def identical_points(point1, point2):
+    if(point1.coordinate[0] == point2.coordinate[0]\
+       and point1.coordinate[1] == point2.coordinate[1]):
+        return True
+    return False
+
+

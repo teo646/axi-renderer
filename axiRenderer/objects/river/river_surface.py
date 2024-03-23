@@ -2,7 +2,7 @@ from axiRenderer.drawing_canvas import canvas, ReversedMask
 from axiRenderer.utils.display import display_3d
 from axiRenderer.utils.math import get_length, get_middle_point
 from axiRenderer.utils.linear_algebra import get_normalized_vector
-from axiRenderer.objects.components import Mesh, LineSegment
+from axiRenderer.objects.components import Mesh, Path
 from axiRenderer.objects.draw import connect_points
 from axiRenderer.world.mesh_arranger import arrange_meshes
 import numpy as np
@@ -13,31 +13,34 @@ import copy
 
 class RiverSurface(Mesh):
     def __init__(self, path, world_):
-        pen = ((80,80,80), 0.2)
         super().__init__()
-        self.points = path
-        self.vertices_index = [i for i in range(len(path))]
+        self.vertices = path
         self.world = copy.deepcopy(world_)
 #        self.surfaceFunction = self.createSurfaceFunction(2)
 
     def _create_world_under_water(self):
-        vector1 = self.points[self.vertices_index[0]].coordinate[:3]\
-                  - self.points[self.vertices_index[1]].coordinate[:3]
-        vector2 = self.points[self.vertices_index[0]].coordinate[:3]\
-                  - self.points[self.vertices_index[-1]].coordinate[:3]
+        vector1 = self.vertices[1].coordinate[:3]\
+                  - self.vertices[0].coordinate[:3]
+        vector2 = self.vertices[-1].coordinate[:3]\
+                  - self.vertices[0].coordinate[:3]
         normalized_normal = get_normalized_vector(np.cross(vector1, vector2))
-        point_lying_on_the_plane = self.points[self.vertices_index[0]].coordinate[:3]
-        for mesh in self.world.meshes:
-            for point in mesh.points:
-                point.coordinate[:3] = point.coordinate[:3] - 2*np.dot(point.coordinate[:3]\
-                                      -point_lying_on_the_plane, normalized_normal)*normalized_normal
-            mesh.reverse_dir()
+        point_lying_on_the_plane = self.vertices[0].coordinate[:3]
+        for object_ in self.world.objects:
+            for mesh in object_.meshes:
+                for point in mesh.vertices:
+                    point.coordinate[:3] = point.coordinate[:3] - 2*np.dot(point.coordinate[:3]\
+                                          -point_lying_on_the_plane, normalized_normal)*normalized_normal
+                for path in mesh.paths:
+                    for point in path.points:
+                        point.coordinate[:3] = point.coordinate[:3] - 2*np.dot(point.coordinate[:3]\
+                                              -point_lying_on_the_plane, normalized_normal)*normalized_normal
+                mesh.reverse_direction()
 
 
     def view_transform(self, matrix):
         super().transform(matrix)        
-        for mesh in self.world.meshes:
-            mesh.view_transform(matrix)
+        for object_ in self.world.objects:
+            object_.view_transform(matrix)
 
         self._create_world_under_water()
         self.draw_reflections(matrix)
@@ -57,34 +60,35 @@ class RiverSurface(Mesh):
                     points.insert(i, get_middle_point(points[i],points[i-1]))
         return points
     
-    def draw_lines_on_water(self, lines, inverse_matrix, matrix):
-        for line in lines:
-            line[0].coordinate[2] = self.get_z_value_on_the_plane(line[0].coordinate)
-            line[1].coordinate[2] = self.get_z_value_on_the_plane(line[1].coordinate)
+    def draw_lines_on_water(self, paths, matrix):
+        inverse_matrix = np.linalg.inv(matrix) 
+        for path in paths:
+            for point in path.points:
+                point.coordinate[2] = self.get_z_value_on_the_plane(point.coordinate)
 
-        for line in lines:
-            line[0].coordinate = np.matmul(inverse_matrix,line[0].coordinate)
-            line[1].coordinate = np.matmul(inverse_matrix,line[1].coordinate)
-            points = self.split_points(line[0], line[1])
-            for p in points:
-                p = self.get_point_on_water_surface(p)
-                p.coordinate = np.matmul(matrix,p.coordinate)
-            for i in range(len(points)-1):
-                connect_points(self, points[i], points[i+1], line[2])
+        for path in paths:
+            points_after_noise = []
+            for p1, p2 in zip(path.points, path.points[1:]):
+                p1.coordinate = np.matmul(inverse_matrix,p1.coordinate)
+                p2.coordinate = np.matmul(inverse_matrix,p2.coordinate)
+                points = self.split_points(p1, p2)
+                for p in points:
+                    p = self.get_point_on_water_surface(p)
+                    p.coordinate = np.matmul(matrix,p.coordinate)
+                points_after_noise += points[:-1]
+
+            points_after_noise.append(path.points[-1])
+            self.paths.append(Path(points_after_noise, path.pen))
 
     def draw_reflections(self, matrix):
-        inverse_matrix = np.linalg.inv(matrix) 
-        #self.line_segments = []
         self.world.back_face_culling()
-        self.world.meshes = arrange_meshes(self.world.meshes)
+        meshes = [mesh for object_ in self.world.objects for mesh in object_.meshes]
+        meshes = arrange_meshes(meshes)
 
         c = canvas()
-        c.register_mask(ReversedMask([self.points[i] for i in self.vertices_index]))
-        for mesh in self.world.meshes:
+        c.register_mask(ReversedMask(self.vertices))
+        for mesh in meshes:
             c = mesh.draw_digital_image(c)
 
-       
-        # we need to put all of the lines back to lines
-
-        self.draw_lines_on_water(c.lines, inverse_matrix, matrix)
+        self.draw_lines_on_water(c.paths, matrix)
         

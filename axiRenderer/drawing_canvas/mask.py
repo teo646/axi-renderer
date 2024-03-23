@@ -1,7 +1,7 @@
 import numpy as np
 from bisect import bisect_left
 from .util import *
-from axiRenderer.objects.components import Point, LineSegment
+from axiRenderer.objects.components import Point, Path
 
 class Mask:
 
@@ -44,10 +44,10 @@ class Mask:
 
     def _arrange_points(self, use_x_intercept, point1, point2):
         if((not use_x_intercept) and point1.coordinate[0] > point2.coordinate[0]):
-            return point2, point1
+            return point2, point1, True
         elif(use_x_intercept and point1.coordinate[1] > point2.coordinate[1]):
-            return point2, point1
-        return point1, point2
+            return point2, point1, True
+        return point1, point2, False
 
     def _get_intersections(self, use_x_interception, point1, point2):
 
@@ -84,11 +84,15 @@ class Mask:
             use_x_intercept = False
 
 
-        point1, point2 = self._arrange_points(use_x_intercept, point1, point2)
+        point1, point2, reversed_ = self._arrange_points(use_x_intercept, point1, point2)
 
         intersections = self._get_intersections(use_x_intercept, point1, point2)
 
         masked_lines = self._get_masked_lines(use_x_intercept, intersections, point1, point2)
+        if reversed_:
+            masked_lines.reverse()
+            for line in masked_lines:
+                line.reverse()
         return masked_lines
 
     def _get_masked_lines(self, use_x_intercept, intersections, point1, point2):

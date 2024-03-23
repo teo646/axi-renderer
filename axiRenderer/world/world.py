@@ -9,7 +9,7 @@ import numpy as np
 
 class world:
     def __init__(self):
-        self.meshes = []
+        self.objects = []
 
 
     def put_object(self, object_, x_axis_rotation, y_axis_rotation, z_axis_rotation, 
@@ -23,58 +23,30 @@ class world:
         scale_matrix = np.identity(4)
         scale_matrix[:3] *= scale
         transformation_matrix = np.matmul(transformation_matrix, scale_matrix)
-        for mesh in object_.world_transform(transformation_matrix).meshes:
-            self.meshes.append(mesh)
+        self.objects.append(object_.world_transform(transformation_matrix))
 
 
     def back_face_culling(self):
-        processed_meshes = []
-        for mesh in self.meshes:
-            if(mesh.is_front_side()):
-                processed_meshes.append(mesh)
-
-        self.meshes = processed_meshes
+        self.objects = [object_.back_face_culling() for object_ in self.objects ]
 
 
 
     def view_transform(self, EYE, AT):
         transformation_matrix = get_view_transformation_matrix(EYE, AT)
-        for mesh in self.meshes:
-            mesh.view_transform(transformation_matrix)
+        for object_ in self.objects:
+            object_.view_transform(transformation_matrix)
      
-
-    def display(self, EYE, AT):
-        self.view_transform(EYE, AT)
-
-        fig = plt.figure(figsize=(9, 6))
-        ax = fig.add_subplot(111, projection='3d', aspect='equal')
-        ax.axes.set_aspect(aspect='equal')
-        plt.xlabel('x')
-        plt.ylabel('y')
-        for mesh in self.meshes:
-            for line_segment in mesh.line_segments:
-                p1 = mesh.points[line_segment.point1_index]
-                p2 = mesh.points[line_segment.point2_index]
-                ax.plot([p1.coordinate[0], p2.coordinate[0]],
-                        [p1.coordinate[1], p2.coordinate[1]],
-                        zs=[p1.coordinate[2], p2.coordinate[2]],
-                        color=cv2_color_to_plt_color(line_segment.pen[0]),
-                        linewidth = line_segment.pen[1])
-        ax.view_init(90, -90)
-        plt.show()
-
 
     def draw_digital_image(self, EYE, AT):
         #start = time.time()
         self.view_transform(EYE, AT)
         self.back_face_culling()
-        self.meshes = arrange_meshes(self.meshes)
+        meshes = [mesh for object_ in self.objects for mesh in object_.meshes]
+        meshes = arrange_meshes(meshes)
         c = canvas()
-        for mesh in self.meshes:
+        for mesh in meshes:
             c = mesh.draw_digital_image(c)
-        #end = time.time()
-        #print("time spent: "+str(end - start))
-        c.show(20)
+
         return c
 
 
