@@ -31,13 +31,15 @@ def get_squared_distance(point1, point2):
 def arrange_paths(paths):
     starting_path = find_nearest_path(Point(0,0), paths)
     arranged_paths = [starting_path]
-    current_point = starting_path.points[1]
     paths.remove(starting_path)
     
     while len(paths) != 0:
+        current_point = arranged_paths[-1].points[-1]
         next_path = find_nearest_path(current_point, paths)
-        arranged_paths.append(next_path)
-        current_point = next_path.points[1]
+        if(get_squared_distance(current_point, next_path.points[0]) < 0.05):
+            arranged_paths[-1].points += next_path.points[1:]
+        else:
+            arranged_paths.append(next_path)
         paths.remove(next_path)
 
     return arranged_paths

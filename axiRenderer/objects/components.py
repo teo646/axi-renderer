@@ -28,10 +28,11 @@ class Mesh:
 
 
     def get_vertices_after_offset(self):
-        ratio = 0.01
+        ratio = 0.05
         center_x = sum([point.coordinate[0] for point in self.vertices])/len(self.vertices)
         center_y = sum([point.coordinate[1] for point in self.vertices])/len(self.vertices)
-        return [point.coordinate*(1-ratio)+np.array([center_x, center_y,0,0])*ratio for point in self.vertices]
+        return [point.coordinate*(1-ratio)+np.array([center_x, center_y,0,0])*ratio for point in self.vertices] + [[center_x, center_y, 0, 1]]\
+                + [point.coordinate*(1-0.2)+np.array([center_x, center_y,0,0])*0.2 for point in self.vertices]
     
     def is_front_side(self):
         if(self.bi_direction):

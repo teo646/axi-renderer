@@ -17,15 +17,15 @@ class River(Object):
         wall_heigth = 20
         river_surface_depth = 7
 
-        wall_inner_mesh = get_wall_inner_mesh(length, wall_heigth+river_surface_depth)
-        meshes.append(wall_inner_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, -width/2, -river_surface_depth)).reverse_direction())
+        wall_inner_mesh = get_wall_inner_mesh(length, 2*wall_heigth+river_surface_depth)
+        meshes.append(wall_inner_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, -width/2, -river_surface_depth-wall_heigth)).reverse_direction())
         wall_outer_mesh = get_wall_outer_mesh(length, wall_heigth)
         meshes.append(wall_outer_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, -width/2 - wall_width, 0)))
         wall_top_mesh = get_wall_top_mesh(length, wall_width)
         meshes.append(wall_top_mesh.transform(get_world_transformaion_matrix(0,0,0,-length/2, -width/2 - wall_width, wall_heigth)))
 
-        wall_inner_mesh = get_wall_inner_mesh(length, wall_heigth+river_surface_depth)
-        meshes.append(wall_inner_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, width/2, -river_surface_depth)))
+        wall_inner_mesh = get_wall_inner_mesh(length, 2*wall_heigth+river_surface_depth)
+        meshes.append(wall_inner_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, width/2, -river_surface_depth-wall_heigth)))
         wall_outer_mesh = get_wall_outer_mesh(length, wall_heigth)
         meshes.append(wall_outer_mesh.transform(get_world_transformaion_matrix(pi/2,0,0,-length/2, width/2 + wall_width, 0)).reverse_direction())
         wall_top_mesh = get_wall_top_mesh(length, wall_width)

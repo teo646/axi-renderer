@@ -55,12 +55,15 @@ def get_back_mesh(num_floor, num_room):
     mesh = Mesh()
     mesh = draw_square(mesh, Point(0,0), num_room*9, num_floor*12+6, outline_pen)
     mesh.vertices = deepcopy(mesh.paths[0].points)
+    mesh = draw_simple_window(mesh, Point(num_room*9/2-2, num_floor*8 + 4), 7, 2, 0.5)
+    mesh = draw_simple_window(mesh, Point(num_room*9/2+2, num_floor*8 + 4), 7, 2, 0.5)
     return mesh
 
 def get_corner_back_mesh(num_floor, num_room,depth):
     mesh = Mesh()
     mesh = draw_square(mesh, Point(0,0), num_room*9-depth, num_floor*12+6, outline_pen)
     mesh.vertices = deepcopy(mesh.paths[0].points)
+    mesh = draw_simple_window(mesh, Point((num_room*9-depth)/2, num_floor*8 + 4), 7, 2, 0.5)
     return mesh
 
 

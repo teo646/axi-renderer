@@ -80,7 +80,7 @@ class canvas():
         return floor(x_min), ceil(x_max), floor(y_min), ceil(y_max)
     
 
-    def get_fitting_paths(self):
+    def get_fitting_paths(self,offset):
         x_min, x_max, y_min, y_max = self.get_range_of_points()
 
         #offset paths
@@ -89,8 +89,8 @@ class canvas():
             fitting_path = []
             for point in path.points:
                 fitting_point = deepcopy(point)
-                fitting_point.coordinate[0] -= x_min
-                fitting_point.coordinate[1] -= y_min
+                fitting_point.coordinate[0] -= x_min-offset
+                fitting_point.coordinate[1] -= y_min-offset
                 fitting_path.append(fitting_point)
             fitting_paths.append(Path(fitting_path, path.pen))
 

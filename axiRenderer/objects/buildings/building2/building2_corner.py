@@ -38,7 +38,7 @@ class Building2_corner(Object):
         x_back = get_corner_back_mesh(num_floor, num_room_x,depth).transform(get_world_transformaion_matrix(pi/2,0,0,-num_room_x*9/2, depth/2, 0))
         meshes.append(x_back.reverse_direction())
         y_back = get_corner_back_mesh(num_floor, num_room_y,depth).transform(get_world_transformaion_matrix(pi/2,0,pi/2,num_room_x*9/2-depth, depth/2, 0))
-        meshes.append(y_back)
+        meshes.append(y_back.reverse_direction())
         front_x_roof = get_corner_front_roof_mesh(num_room_x, depth, roof_angle, eave_length).transform(get_world_transformaion_matrix(roof_angle,0,0,-num_room_x*9/2, -depth/2, num_floor*12+6))
         meshes.append(front_x_roof.remove_direction())
         rear_x_roof = get_corner_rear_roof_mesh(num_room_x, depth, roof_angle).transform(get_world_transformaion_matrix(-roof_angle,0,0,-num_room_x*9/2, 0, num_floor*12+6+depth*tan(roof_angle)/2))

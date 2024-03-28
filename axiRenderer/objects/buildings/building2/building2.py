@@ -33,7 +33,7 @@ class Building2(Object):
         left_side = get_side_mesh(num_floor, depth, roof_angle).transform(get_world_transformaion_matrix(pi/2,0,pi/2,-num_room*9/2, -depth/2, 0))
         meshes.append(left_side)
         back = get_back_mesh(num_floor, num_room).transform(get_world_transformaion_matrix(pi/2,0,0,-num_room*9/2, depth/2, 0))
-        meshes.append(back)
+        meshes.append(back.reverse_direction())
         front_roof = get_front_roof_mesh(num_room, depth, roof_angle, eave_length).transform(get_world_transformaion_matrix(roof_angle,0,0,-num_room*9/2, -depth/2, num_floor*12+6))
         meshes.append(front_roof.remove_direction())
         rear_roof = get_rear_roof_mesh(num_room, depth, roof_angle).transform(get_world_transformaion_matrix(roof_angle,0,pi, num_room*9/2, depth/2, num_floor*12+6))

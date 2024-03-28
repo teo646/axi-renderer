@@ -64,7 +64,7 @@ class Mask:
             vertex2_sign = get_intercept_function(self.path[index]) - intercept
             #basic intersecting case
             if(vertex1_sign*vertex2_sign < 0):
-                intersection = get_line_intersection(point1, point2, self.path[index-1], self.path[index])
+                intersection = get_line_intersection(self.path[index-1], self.path[index], point1, point2)
                 if(intersection):
                     intersections.append(intersection)
             #case where a vertex lies on the line

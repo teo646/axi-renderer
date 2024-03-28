@@ -5,7 +5,7 @@ import copy
 outline_pen = ((80,80,80), 0.1)
 detail_pen = ((80,80,80), 0.1)
 roof_pen = ((11, 44, 154), 0.15)
-
+water_pen = ((220, 137, 75), 0.1)
 
 def move_point(point_, Dx, Dy):
     return Point(point_.coordinate[0]+Dx, point_.coordinate[1]+Dy)

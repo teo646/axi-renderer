@@ -17,11 +17,11 @@ class world:
         transformation_matrix = get_world_transformaion_matrix(x_axis_rotation,
                                                                y_axis_rotation,
                                                                z_axis_rotation,
-                                                               x_axis_translation,
-                                                               y_axis_translation,
-                                                               z_axis_translation)
+                                                               1.2*x_axis_translation,
+                                                               1.2*y_axis_translation,
+                                                               1.2*z_axis_translation)
         scale_matrix = np.identity(4)
-        scale_matrix[:3] *= scale
+        scale_matrix[:3] *= 1.2*scale
         transformation_matrix = np.matmul(transformation_matrix, scale_matrix)
         self.objects.append(object_.world_transform(transformation_matrix))
 
